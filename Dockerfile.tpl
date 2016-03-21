@@ -18,9 +18,6 @@ RUN apk update \
     /tmp/* \
     /var/cache/apk/*
 
-COPY plugins.sh /bin/plugins.sh
-RUN chmod +x /bin/plugins.sh
-
 COPY jenkins.sh /bin/jenkins.sh
 RUN chmod +x /bin/jenkins.sh
 
@@ -28,8 +25,13 @@ ADD https://github.com/krallin/tini/releases/download/v0.9.0/tini-static /bin/ti
 RUN chmod +x /bin/tini
 
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d \
+  && mkdir -p /usr/share/jenkins/ref/plugins \
   && mkdir -p $JENKINS_HOME \
   && touch $COPY_REFERENCE_FILE_LOG
+
+# Derivative images should use
+# ADD <Plugin Url> /usr/share/jenkins/ref/plugins/<Plugin Name>.jpi
+# to explicitly define list of jenkins plugins
 
 ADD http://mirrors.jenkins-ci.org/war/latest/jenkins.war /usr/share/jenkins/jenkins.war
 COPY init.groovy.d /usr/share/jenkins/ref/init.groovy.d
